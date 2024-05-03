@@ -59,8 +59,10 @@ class AppUI(tk.Tk):
     def load_data(self, data):
         if data == "Overall":
             overall_data = pd.read_csv("overall_player_stats.csv")
+            self.display_table(overall_data)
         elif data == "By Agent":
-            by_agent_data = pd.read_csv("players_stats_by_agent.csv")
+            by_agent_data = pd.read_csv("player_stats_by_agent.csv")
+            self.display_table(by_agent_data)
 
     def observer(self, event):
         self.statistic_page(event)
@@ -68,6 +70,15 @@ class AppUI(tk.Tk):
     def remove_widgets(self):
         for widget in self.winfo_children():
             widget.destroy()
+
+    def display_table(self, data):
+        self.tree = ttk.Treeview(self, columns=tuple(data.columns), show="headings")
+        for col in data.columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=50)
+        for index, row in data.iterrows():
+            self.tree.insert("", "end", values=tuple(row))
+        self.tree.grid(row=0, column=0, sticky="nsew")
 
     def run(self):
         """Display the calculator user interface."""
