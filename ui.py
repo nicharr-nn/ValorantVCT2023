@@ -29,8 +29,6 @@ class AppUI(tk.Tk):
         self.display_label.place(relx=0.5, rely=0.4, anchor="center")
         self.home_btn.place(relx=0.5, rely=0.5, anchor="center")
         self.exit_btn.place(relx=0.5, rely=0.6, anchor="center")
-        # self.home_btn.grid(row=1, column=0, sticky="nsew")
-        # self.exit_btn.grid(row=2, column=0, sticky="nsew")
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -62,13 +60,11 @@ class AppUI(tk.Tk):
         # self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
         # self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
 
-        # select the data to display a graph bar, histogram, boxplot, scatter, and pie
-        # self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Histogram", "Boxplot", "Scatter", "Pie"])
-        # self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
-
         if self.key_pressed == "Overall":
             self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "(in progress) Distribution(Kills Max)",
-                                                        "(in progress) Scatter plots(Rating,HSP)"])
+                                                        "(in progress) Scatter plots(Rating,HSP), Scatter plots(KD,HSP)"])
+            # self.descriptive = ttk.Combobox(self, values=["Rating, HSP", "KD, HSP"])
+
             # self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
             #                                              "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
             #                                              "K","D","A","FK","FD"])
@@ -76,11 +72,27 @@ class AppUI(tk.Tk):
             self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
 
         self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
+        self.descriptive = ttk.Button(self, text="Descriptive", command=self.descriptive_page)
+        self.descriptive.place(relx=0.5, rely=0.9, anchor="se")
         # self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
-
 
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
+
+    def descriptive_page(self):
+        self.remove_widgets()
+        # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
+        self.column_selected = ttk.Combobox(self, values=["(in progress) Rating, HSP", "(in progress) KD, HSP"])
+        self.column_selected.pack()
+        self.process_btn = ttk.Button(self, text="Process", command=self.descrip_calculate)
+        self.process_btn.pack()
+        self.player_selected = ttk.Combobox(self, values=["Demon1", "in progress"])
+
+
+    def descrip_calculate(self):
+        # calculate the descriptive statistics (mean, median, mode, std, min, max)
+        # for the selected column
+        df = pd.DataFrame(self.selected_data)
 
     def graph_page(self):
         # need to be in graph.py
@@ -111,6 +123,9 @@ class AppUI(tk.Tk):
             canvas = FigureCanvasTkAgg(fig, master=window)
             canvas.draw()
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        elif selected_chart == "Distribution(Kills Max)":
+            pass
 
         elif selected_chart == "Pie(Agent)":
             window = tk.Toplevel(self)
