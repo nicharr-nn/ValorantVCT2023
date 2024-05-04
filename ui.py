@@ -1,10 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-from graph import Graph
+import matplotlib.pyplot as plt
+from matplotlib.backends._backend_tk import NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import seaborn as sns
+import numpy as np
 
 class AppUI(tk.Tk):
-    def __init__(self, df=''):
+    def __init__(self):
         """Create a new instance of the AppUI class."""
         super().__init__()
         self.title("VALORANT Champions Tour 2023 Player Performance")
@@ -12,7 +16,7 @@ class AppUI(tk.Tk):
         self.__screen_height = self.winfo_screenheight()
         self.geometry(f"{self.__screen_width}x{self.__screen_height}")
         self.main_frame = ttk.Frame(self)
-        self.__df = df
+        # self.__df = df
         self.selected_data = []
         self.init_components()
 
@@ -48,33 +52,84 @@ class AppUI(tk.Tk):
         self.byagent_btn.place(relx=0.6, rely=0.5, anchor="center")
 
     def statistic_page(self, event):
-        key_pressed = event.widget.cget('text')
+        self.key_pressed = event.widget.cget('text')
         self.remove_widgets()
-        self.load_data(key_pressed)
+        self.load_data(self.key_pressed)
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
-        self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
-        self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+        # self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
+        # self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
 
         # select the data to display a graph bar, histogram, boxplot, scatter, and pie
-        self.cbb_chart = ttk.Combobox(self, values=["Bar", "Histogram", "Boxplot", "Scatter", "Pie"])
-        self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
+        # self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Histogram", "Boxplot", "Scatter", "Pie"])
+        # self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
 
-        if key_pressed == "Overall":
-            self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating","ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max","K","D","A","FK","FD"])
-        elif key_pressed == "By Agent":
-            self.cbb_column = ttk.Combobox(self, values=["Rounds Played","Rating","ACS","KD","KAST","ADR","KPR","APR","FKPR","FDPR","HSP","CSP","Kills Max","K","D","A","FK","FD"])
-        self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
+        if self.key_pressed == "Overall":
+            self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "(in progress) Distribution(Kills Max)",
+                                                        "(in progress) Scatter plots(Rating,HSP)"])
+            # self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
+            #                                              "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
+            #                                              "K","D","A","FK","FD"])
+        elif self.key_pressed == "By Agent":
+            self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
+
+        self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
+        # self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
 
 
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
     def graph_page(self):
-        self.remove_widgets()
+        # need to be in graph.py
+        selected_chart = self.cbb_chart.get()
+        df = pd.DataFrame(self.selected_data)
+        if selected_chart == "Bar(K,D,A)":
+            window = tk.Toplevel(self)
+            window.title("Bar Chart (Kills, Death, Assist)")
+            fig = plt.figure()
+            ax = fig.add_subplot()
+            fig.set_size_inches(5, 4)
 
+            bar_width = 0.2
+
+            x = np.arange(len(df['Player']))
+
+            ax.bar(x - bar_width, df['K'], width=bar_width, color='blue', alpha=0.7, label='Kills')
+            ax.bar(x, df['D'], width=bar_width, color='red', alpha=0.7, label='Deaths')
+            ax.bar(x + bar_width, df['A'], width=bar_width, color='green', alpha=0.7, label='Assists')
+
+            ax.set_xticks(x)
+            ax.set_xticklabels(df['Player'], rotation=0, fontsize=8)
+
+            plt.xlabel("Player", fontsize=8)
+            plt.ylabel("Kills count", fontsize=8)
+            plt.legend()
+
+            canvas = FigureCanvasTkAgg(fig, master=window)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        elif selected_chart == "Pie(Agent)":
+            window = tk.Toplevel(self)
+            window.title("Pie Chart (Agent)")
+            fig = plt.figure()
+            ax = fig.add_subplot()
+            fig.set_size_inches(5, 4)
+
+            agent = df['Agent'].value_counts()
+            ax.pie(agent, labels=agent.index, autopct='%1.1f%%', startangle=90)
+
+            canvas = FigureCanvasTkAgg(fig, master=window)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def show_plot(self, fig):
+        canvas = FigureCanvasTkAgg(fig, master=self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def story_page(self):
         self.remove_widgets()
@@ -144,7 +199,16 @@ class AppUI(tk.Tk):
 
     def select_item(self, data):
         str_data = self.tree.item(self.tree.selection())
-        self.selected_data.append(str_data['values'])
+        # self.selected_data.append(str_data['values'])
+        if self.key_pressed == "Overall":
+            column = ["Player ID","Player","Team","Number of Agents Played","Rounds Played","Rating",
+                      "ACS","KD","KAST","ADR","KPR","APR","FKPR","FDPR","HSP","CSP","CL","Kills Max","K","D","A","FK","FD"]
+        elif self.key_pressed == "By Agent":
+            column = ["Player ID","Player","Team","Agent","Agent Type","Rounds Played","Rating","ACS","KD","KAST","ADR","KPR",
+                                                         "APR","FKPR","FDPR","HSP","CSP","Kills Max","K","D",
+                                                         "A","FK","FD"]
+        dict_data = dict(zip(column, str_data['values']))
+        self.selected_data.append(dict_data)
         self.tree2.insert("", "end", values=str_data['values'])
 
 
