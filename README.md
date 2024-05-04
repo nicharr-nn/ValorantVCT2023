@@ -9,6 +9,10 @@ https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance
 ## Python Version
 Requires Python >= 3.10
 
+## Current Features
+- Display player statistics table
+- Display graphs (bar chart(K,D,A))
+
 ## How to run the application
 1. Clone the repository
 2. Install the required packages by running the following command in the terminal:
