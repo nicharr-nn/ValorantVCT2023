@@ -4,6 +4,8 @@ VALORANT is a free-to-play first-person 5v5 character-based tactical FPS tactica
 ## Data Sources
 https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance
 
+(I edited the data in column CL (clutch won/lost), which the owner of this dataset wrote by using "/". This caused Excel to interpret it as a date. So, I edited it to be normal text and changed "/" to ":")
+
 ## Python Version
 Requires Python >= 3.10
 
