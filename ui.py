@@ -50,11 +50,14 @@ class AppUI(tk.Tk):
         self.load_data(key_pressed)
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
-        self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
+        self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
+        self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+
+
     def story_page(self):
-        pass
+        self.remove_widgets()
 
     def load_data(self, data):
         if data == "Overall":
@@ -72,13 +75,30 @@ class AppUI(tk.Tk):
             widget.destroy()
 
     def display_table(self, data):
-        self.tree = ttk.Treeview(self, columns=tuple(data.columns), show="headings")
+        self.frame = tk.Frame(self, width=self.__screen_width//2, height=self.__screen_width//2)
+        self.frame.grid(row=0, column=0, padx=30, pady=20)
+
+        y_scrollbar = tk.Scrollbar(self.frame, orient="vertical")
+        y_scrollbar.pack(side="right", fill="y")
+
+        x_scrollbar = tk.Scrollbar(self.frame, orient="horizontal")
+        x_scrollbar.pack(side="bottom", fill="x")
+
+        self.tree = ttk.Treeview(self.frame, columns=tuple(data.columns), show="headings")
+
         for col in data.columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=50)
+            self.tree.column(col, width=100, anchor="center")
         for index, row in data.iterrows():
             self.tree.insert("", "end", values=tuple(row))
-        self.tree.grid(row=0, column=0, sticky="nsew")
+
+        self.tree.pack(side="left", fill="both", expand=True)
+
+        self.tree.configure(yscrollcommand=y_scrollbar.set, xscrollcommand=x_scrollbar.set)
+        y_scrollbar.config(command=self.tree.yview)
+        x_scrollbar.config(command=self.tree.xview)
+
+
 
     def run(self):
         """Display the calculator user interface."""
