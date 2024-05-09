@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.backends._backend_tk import NavigationToolbar2Tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import seaborn as sns
+from graph import Graph
 import numpy as np
 
 class AppUI(tk.Tk):
@@ -16,9 +14,10 @@ class AppUI(tk.Tk):
         self.__screen_height = self.winfo_screenheight()
         self.geometry(f"{self.__screen_width}x{self.__screen_height}")
         self.main_frame = ttk.Frame(self)
-        # self.__df = df
         self.selected_data = []
         self.init_components()
+        # call graph.py
+        self.graph = Graph()
 
     def init_components(self):
         self.display_label = ttk.Label(self, text="VALORANT Champions Tour 2023 Player Performance",
@@ -57,24 +56,26 @@ class AppUI(tk.Tk):
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
-        # self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
-        # self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+        self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
+        self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
 
         if self.key_pressed == "Overall":
-            self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "(in progress) Distribution(Kills Max)",
-                                                        "(in progress) Scatter plots(Rating,HSP), Scatter plots(KD,HSP)"])
+            # self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "(in progress) Distribution(Kills Max)",
+            #                                             "(in progress) Scatter plots(Rating,HSP), Scatter plots(KD,HSP)"])
             # self.descriptive = ttk.Combobox(self, values=["Rating, HSP", "KD, HSP"])
 
-            # self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
-            #                                              "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
-            #                                              "K","D","A","FK","FD"])
+            self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
+                                                         "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
+                                                         "K","D","A","FK","FD"])
+            self.cbb_chart = ttk.Combobox(self, values=["Bar", "Pie", "Line", "Histogram", "Boxplot"])
+
         elif self.key_pressed == "By Agent":
             self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
 
         self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
+        self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
         self.descriptive = ttk.Button(self, text="Descriptive", command=self.descriptive_page)
-        self.descriptive.place(relx=0.5, rely=0.9, anchor="se")
-        # self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
+        self.descriptive.place(relx=0.3, rely=0.9, anchor="se")
 
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
@@ -90,61 +91,70 @@ class AppUI(tk.Tk):
 
 
     def descrip_calculate(self):
-        # calculate the descriptive statistics (mean, median, mode, std, min, max)
-        # for the selected column
+        # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
         df = pd.DataFrame(self.selected_data)
 
     def graph_page(self):
         # need to be in graph.py
+        selected_column = self.cbb_column.get()
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
-        if selected_chart == "Bar(K,D,A)":
-            window = tk.Toplevel(self)
-            window.title("Bar Chart (Kills, Death, Assist)")
-            fig = plt.figure()
-            ax = fig.add_subplot()
-            fig.set_size_inches(5, 4)
+        if selected_chart == "Bar":
+            self.graph.bar_processor(df, selected_column, self.selected_data)
+        elif selected_chart == "Pie":
+            self.graph.pie_processor(df, selected_column, self.selected_data)
+        elif selected_chart == "Histogram":
+            self.graph.histogram_processor(df, selected_column, self.selected_data)
+        elif selected_chart == "Boxplot":
+            self.graph.boxplot_processor(df, selected_column, self.selected_data)
 
-            bar_width = 0.2
+        # if selected_chart == "Bar(K,D,A)":
+        #     window = tk.Toplevel(self)
+        #     window.title("Bar Chart (Kills, Death, Assist)")
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot()
+        #     fig.set_size_inches(5, 4)
+        #
+        #     bar_width = 0.2
+        #
+        #     x = np.arange(len(df['Player']))
+        #
+        #     ax.bar(x - bar_width, df['K'], width=bar_width, color='blue', alpha=0.7, label='Kills')
+        #     ax.bar(x, df['D'], width=bar_width, color='red', alpha=0.7, label='Deaths')
+        #     ax.bar(x + bar_width, df['A'], width=bar_width, color='green', alpha=0.7, label='Assists')
+        #
+        #     ax.set_xticks(x)
+        #     ax.set_xticklabels(df['Player'], rotation=0, fontsize=8)
+        #
+        #     plt.xlabel("Player", fontsize=8)
+        #     plt.ylabel("Kills count", fontsize=8)
+        #     plt.legend()
+        #
+        #     canvas = FigureCanvasTkAgg(fig, master=window)
+        #     canvas.draw()
+        #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-            x = np.arange(len(df['Player']))
+        # elif selected_chart == "Distribution(Kills Max)":
+        #     pass
 
-            ax.bar(x - bar_width, df['K'], width=bar_width, color='blue', alpha=0.7, label='Kills')
-            ax.bar(x, df['D'], width=bar_width, color='red', alpha=0.7, label='Deaths')
-            ax.bar(x + bar_width, df['A'], width=bar_width, color='green', alpha=0.7, label='Assists')
+        # elif selected_chart == "Pie(Agent)":
+        #     window = tk.Toplevel(self)
+        #     window.title("Pie Chart (Agent)")
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot()
+        #     fig.set_size_inches(5, 4)
+        #
+        #     agent = df['Agent'].value_counts()
+        #     ax.pie(agent, labels=agent.index, autopct='%1.1f%%', startangle=90)
+        #
+        #     canvas = FigureCanvasTkAgg(fig, master=window)
+        #     canvas.draw()
+        #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-            ax.set_xticks(x)
-            ax.set_xticklabels(df['Player'], rotation=0, fontsize=8)
-
-            plt.xlabel("Player", fontsize=8)
-            plt.ylabel("Kills count", fontsize=8)
-            plt.legend()
-
-            canvas = FigureCanvasTkAgg(fig, master=window)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-        elif selected_chart == "Distribution(Kills Max)":
-            pass
-
-        elif selected_chart == "Pie(Agent)":
-            window = tk.Toplevel(self)
-            window.title("Pie Chart (Agent)")
-            fig = plt.figure()
-            ax = fig.add_subplot()
-            fig.set_size_inches(5, 4)
-
-            agent = df['Agent'].value_counts()
-            ax.pie(agent, labels=agent.index, autopct='%1.1f%%', startangle=90)
-
-            canvas = FigureCanvasTkAgg(fig, master=window)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    def show_plot(self, fig):
-        canvas = FigureCanvasTkAgg(fig, master=self)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+    # def show_plot(self, fig):
+    #     canvas = FigureCanvasTkAgg(fig, master=self)
+    #     canvas.draw()
+    #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def story_page(self):
         self.remove_widgets()
