@@ -37,3 +37,17 @@ class Graph:
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def histogram_processor(self, df, title, data):
+        window = tk.Toplevel(self.df)
+        window.title("Histogram")
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        fig.set_size_inches(5, 4)
+
+        sns.histplot(data=df, x=title, ax=ax)
+        ax.set_title(title)
+
+        canvas = FigureCanvasTkAgg(fig, master=window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
