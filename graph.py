@@ -70,7 +70,7 @@ class Graph:
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def bar_KDA_processor(self, df, data):
+    def bar_KDA_processor(self, df):
         window = tk.Toplevel(self.df)
         window.title("Bar Chart (Kills, Death, Assist)")
         fig = plt.figure()
@@ -86,10 +86,11 @@ class Graph:
         ax.bar(x + bar_width, df['A'], width=bar_width, color='green', alpha=0.7, label='Assists')
 
         ax.set_xticks(x)
-        ax.set_xticklabels(df['Player'], rotation=0, fontsize=8)
+        ax.set_xticklabels(df['Player'], rotation=90, fontsize=3)
 
-        plt.xlabel("Player", fontsize=8)
-        plt.ylabel("Kills count", fontsize=8)
+        plt.title("Bar graph of KDA for all players", fontsize=6)
+        plt.xlabel("Player", fontsize=6)
+        plt.ylabel("Frequency", fontsize=6)
         plt.legend()
 
         canvas = FigureCanvasTkAgg(fig, master=window)
