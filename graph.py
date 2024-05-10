@@ -15,14 +15,14 @@ class Graph:
         window.title(title)
         fig = plt.figure()
         ax = fig.add_subplot()
-        fig.set_size_inches(4, 5)
+        fig.set_size_inches(5, 4)
 
         sns.barplot(x='Player', y=title, data=df, ax=ax)
         ax.set_xticks(range(len(df['Player'])))
-        ax.set_xticklabels(df['Player'], rotation=90, ha='right', fontsize=8)
+        ax.set_xticklabels(df['Player'], rotation=45, ha='right', fontsize=6)
         ax.set_yticks(ax.get_yticks())
-        ax.set_yticklabels(ax.get_yticklabels(), fontsize=8)
-        ax.set_title(title, fontsize=8)
+        ax.set_yticklabels(ax.get_yticklabels(), fontsize=6)
+        ax.set_title(title, fontsize=6)
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
