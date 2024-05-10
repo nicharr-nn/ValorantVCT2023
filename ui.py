@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
+from PIL import Image, ImageTk
+
 from graph import Graph
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +23,14 @@ class AppUI(tk.Tk):
         self.graph = Graph()
 
     def init_components(self):
+        background_image = Image.open("vct_bg.png")
+        background_image = background_image.resize((self.__screen_width, self.__screen_height))
+        background_photo = ImageTk.PhotoImage(background_image)
+
+        background_label = tk.Label(self, image=background_photo)
+        background_label.image = background_photo
+        background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
+
         self.display_label = ttk.Label(self, text="VALORANT Champions Tour 2023 Player Performance",
                                        font=("Arial", 16, "bold"))
         self.home_btn = ttk.Button(self, text="Home", command=self.home_page)
@@ -49,10 +59,20 @@ class AppUI(tk.Tk):
         self.overall_btn.place(relx=0.4, rely=0.5, anchor="center")
         self.byagent_btn.place(relx=0.6, rely=0.5, anchor="center")
 
+    def menu_tab(self):
+        self.menu_bar = tk.Menu(self)
+        self.config(menu=self.menu_bar)
+        self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label="Menu", menu=self.file_menu)
+        self.file_menu.add_command(label="Home", command=self.home_page)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Exit", command=self.quit)
+
     def statistic_page(self, event):
         self.key_pressed = event.widget.cget('text')
         self.remove_widgets()
         self.load_data(self.key_pressed)
+        self.menu_tab()
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
@@ -93,6 +113,7 @@ class AppUI(tk.Tk):
 
     def descriptive_page(self):
         self.remove_widgets()
+        self.menu_tab()
         # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
         self.column_selected = ttk.Combobox(self, values=["(in progress) Rating, HSP", "(in progress) KD, HSP"])
         self.column_selected.pack()
@@ -110,7 +131,9 @@ class AppUI(tk.Tk):
         selected_column = self.cbb_column.get()
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
-        if selected_chart == "Bar":
+        if not self.selected_data:
+            messagebox.showinfo("Warning", "Please select a player")
+        elif selected_chart == "Bar":
             self.graph.bar_processor(df, selected_column, self.selected_data)
         elif selected_chart == "Pie":
             self.graph.pie_processor(df, selected_column, self.selected_data)
@@ -118,10 +141,8 @@ class AppUI(tk.Tk):
             self.graph.histogram_processor(df, selected_column, self.selected_data)
         elif selected_chart == "Boxplot":
             self.graph.boxplot_processor(df, selected_column, self.selected_data)
-
-
-        # elif selected_chart == "Distribution(Kills Max)":
-        #     pass
+        else:
+            messagebox.showinfo("Warning", "Please select a chart and a column")
 
         # elif selected_chart == "Pie(Agent)":
         #     window = tk.Toplevel(self)
@@ -144,6 +165,7 @@ class AppUI(tk.Tk):
 
     def story_page(self):
         self.remove_widgets()
+        self.menu_tab()
         self.selected_data = []
         self.load_data(self.key_pressed)
 
@@ -173,7 +195,9 @@ class AppUI(tk.Tk):
     def graph_page_story(self):
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
-        if selected_chart == "Bar(K,D,A)":
+        if not self.selected_data:
+            messagebox.showinfo("Warning", "Please select a player")
+        elif selected_chart == "Bar(K,D,A)":
             self.graph.bar_KDA_processor(df, self.selected_data)
         elif selected_chart == "Distribution(Kills Max)":
             pass
@@ -181,6 +205,8 @@ class AppUI(tk.Tk):
             pass
         elif selected_chart == "Scatter plots(KD,HSP)":
             pass
+        else:
+            messagebox.showinfo("Warning", "Please select a chart")
 
     def load_data(self, data):
         if data == "Overall":
