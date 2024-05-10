@@ -17,6 +17,7 @@ class AppUI(tk.Tk):
         self.init_components()
         self.graph = Graph()
         self.all_players = []
+        self.player_selected = None
 
     def init_components(self):
         background_image = Image.open("vct_bg.png")
@@ -36,9 +37,6 @@ class AppUI(tk.Tk):
         self.home_btn.place(relx=0.5, rely=0.5, anchor="center")
         self.exit_btn.place(relx=0.5, rely=0.6, anchor="center")
 
-        # self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=1)
-        # self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
     def home_page(self):
@@ -79,14 +77,14 @@ class AppUI(tk.Tk):
         if self.key_pressed == "Overall":
             self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
                                                          "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
-                                                         "K","D","A","FK","FD"])
+                                                         "K","D","A","FK","FD"], state="readonly")
 
         elif self.key_pressed == "By Agent":
             self.cbb_column = ttk.Combobox(self, values=["Rounds Played", "Rating", "ACS", "KD", "KAST", "ADR",
-                                                         "KPR", "APR", "FKPR", "FDPR", "HSP",
-                                                         "CSP", "Kills Max", "K", "D", "A", "FK", "FD"])
+                                                         "KPR", "APR", "FKPR", "FDPR", "HSP", "CSP", "Kills Max",
+                                                         "K", "D", "A", "FK", "FD"], state="readonly")
 
-        self.cbb_chart = ttk.Combobox(self, values=["Bar", "Pie", "Histogram", "Boxplot"])
+        self.cbb_chart = ttk.Combobox(self, values=["Bar", "Pie", "Histogram", "Boxplot"], state="readonly")
         self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
         self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
 
@@ -106,7 +104,6 @@ class AppUI(tk.Tk):
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
-
     def descriptive_page(self):
         self.remove_widgets()
         self.menu_tab()
@@ -117,13 +114,11 @@ class AppUI(tk.Tk):
         self.process_btn.pack()
         self.player_selected = ttk.Combobox(self, values=["Demon1", "in progress"])
 
-
     def descrip_calculate(self):
         # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
         df = pd.DataFrame(self.selected_data)
 
     def graph_page(self):
-        # need to be in graph.py
         selected_column = self.cbb_column.get()
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
@@ -140,25 +135,6 @@ class AppUI(tk.Tk):
         else:
             messagebox.showinfo("Warning", "Please select a chart and a column")
 
-        # elif selected_chart == "Pie(Agent)":
-        #     window = tk.Toplevel(self)
-        #     window.title("Pie Chart (Agent)")
-        #     fig = plt.figure()
-        #     ax = fig.add_subplot()
-        #     fig.set_size_inches(5, 4)
-        #
-        #     agent = df['Agent'].value_counts()
-        #     ax.pie(agent, labels=agent.index, autopct='%1.1f%%', startangle=90)
-        #
-        #     canvas = FigureCanvasTkAgg(fig, master=window)
-        #     canvas.draw()
-        #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    # def show_plot(self, fig):
-    #     canvas = FigureCanvasTkAgg(fig, master=self)
-    #     canvas.draw()
-    #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
     def story_page(self):
         self.remove_widgets()
         self.menu_tab()
@@ -166,45 +142,57 @@ class AppUI(tk.Tk):
 
         if self.key_pressed == "Overall":
             self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Distribution(Kills Max)",
-                                                        "Distribution(Rating)",
-                                                        "Scatter plots(Rating,HSP)", "Scatter plots(KD,HSP)"])
+                                                        "Distribution(Rating)", "Scatter plots(Rating,HSP)",
+                                                        "Scatter plots(KD,HSP)"], state="readonly")
         elif self.key_pressed == "By Agent":
-            self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"])
+            self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"], state="readonly")
             self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
             self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
 
-        self.back_btn = ttk.Button(self, text="Back", command=self.statistic_page)
+        self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
-        # self.tree.bind("<ButtonRelease-1>", self.select_item)
         self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
     def chart_choose(self):
         if self.cbb_chart.get() == "Pie(Agent)":
-            self.player_selected = ttk.Combobox(self, values=self.get_player_name())
+            self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
             self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+        elif self.cbb_chart.get() == "Bar(Rating,HSP)":
+            self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
+            self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+        else:
+            messagebox.showinfo("Done", "Picked!, Please click 'Process' button to view the chart.")
 
     def graph_page_story(self):
         selected_chart = self.cbb_chart.get()
-        # df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
         if selected_chart == "Bar(K,D,A)":
             df = pd.read_csv("overall_player_stats.csv")
             self.graph.bar_KDA_processor(df)
         elif selected_chart == "Distribution(Kills Max)":
-            pass
+            df = pd.read_csv("overall_player_stats.csv")
+            self.graph.histogram_processor(df, "Kills Max", self.selected_data)
         elif selected_chart == "Distribution(Rating)":
-            pass
+            df = pd.read_csv("overall_player_stats.csv")
+            self.graph.histogram_processor(df, "Rating", self.selected_data)
+        elif selected_chart == "Bar(Rating,HSP)":
+            df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
+            self.graph.bar_rating_hsp_processor(df)
         elif selected_chart == "Scatter plots(Rating,HSP)":
-            pass
+            df = pd.read_csv("overall_player_stats.csv")
+            self.graph.scatter_processor(df, "Rating", "HSP")
         elif selected_chart == "Scatter plots(KD,HSP)":
-            pass
+            df = pd.read_csv("overall_player_stats.csv")
+            self.graph.scatter_processor(df, "KD", "HSP")
         elif selected_chart == "Pie(Agent)":
+            if not self.player_selected:
+                messagebox.showinfo("Warning", "Please click 'Pick' button to select a player.")
             df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
             self.graph.pie_agent_processor(df)
         else:
-            messagebox.showinfo("Warning", "Please select a chart")
+            messagebox.showinfo("Warning", "Please select a chart.")
 
     def get_player_info(self, player_name):
         if self.key_pressed == "By Agent":
@@ -213,7 +201,6 @@ class AppUI(tk.Tk):
             player_data = pd.read_csv("overall_player_stats.csv")
         player_info = player_data[player_data['Player'] == player_name]
         return player_info
-
 
     def load_data(self, data):
         if data == "Overall":
@@ -256,7 +243,7 @@ class AppUI(tk.Tk):
         y_scrollbar.config(command=self.tree.yview)
         x_scrollbar.config(command=self.tree.xview)
 
-        # second frame
+        # second table
 
         y_scrollbar2 = tk.Scrollbar(self.frame2, orient="vertical")
         y_scrollbar2.pack(side="right", fill="y")
