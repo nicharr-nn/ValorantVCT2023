@@ -164,41 +164,56 @@ class AppUI(tk.Tk):
         self.menu_tab()
         self.selected_data = []
 
-        self.back_btn = ttk.Button(self, text="Back", command=self.statistic_page)
-        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
-
         if self.key_pressed == "Overall":
             self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Distribution(Kills Max)",
+                                                        "Distribution(Rating)",
                                                         "Scatter plots(Rating,HSP)", "Scatter plots(KD,HSP)"])
         elif self.key_pressed == "By Agent":
             self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"])
+            self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
+            self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
 
-        # self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
-        # self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
-
-        self.player_selected = ttk.Combobox(self, values=self.get_player_name())
-        self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+        self.back_btn = ttk.Button(self, text="Back", command=self.statistic_page)
+        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
         # self.tree.bind("<ButtonRelease-1>", self.select_item)
         self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
+    def chart_choose(self):
+        if self.cbb_chart.get() == "Pie(Agent)":
+            self.player_selected = ttk.Combobox(self, values=self.get_player_name())
+            self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+
     def graph_page_story(self):
         selected_chart = self.cbb_chart.get()
-        df = pd.DataFrame(self.selected_data)
-        if not self.selected_data:
-            messagebox.showinfo("Warning", "Please select a player")
-        elif selected_chart == "Bar(K,D,A)":
-            self.graph.bar_KDA_processor(df, self.selected_data)
+        # df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
+        if selected_chart == "Bar(K,D,A)":
+            df = pd.read_csv("overall_player_stats.csv")
+            self.graph.bar_KDA_processor(df)
         elif selected_chart == "Distribution(Kills Max)":
+            pass
+        elif selected_chart == "Distribution(Rating)":
             pass
         elif selected_chart == "Scatter plots(Rating,HSP)":
             pass
         elif selected_chart == "Scatter plots(KD,HSP)":
             pass
+        elif selected_chart == "Pie(Agent)":
+            df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
+            self.graph.pie_agent_processor(df)
         else:
             messagebox.showinfo("Warning", "Please select a chart")
+
+    def get_player_info(self, player_name):
+        if self.key_pressed == "By Agent":
+            player_data = pd.read_csv("player_stats_by_agent.csv")
+        elif self.key_pressed == "Overall":
+            player_data = pd.read_csv("overall_player_stats.csv")
+        player_info = player_data[player_data['Player'] == player_name]
+        return player_info
+
 
     def load_data(self, data):
         if data == "Overall":
