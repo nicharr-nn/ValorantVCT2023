@@ -11,7 +11,7 @@ Requires Python >= 3.10
 
 ## Current Features
 - Display player statistics table
-- Display graphs (bar, pie, histogram, and scatter) based on user input
+- Display graphs (bar, pie, histogram, and boxplot) based on user input
 
 ## How to run the application
 1. Clone the repository
