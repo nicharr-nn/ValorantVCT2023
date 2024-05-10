@@ -20,6 +20,7 @@ class AppUI(tk.Tk):
         self.player_selected = None
 
     def init_components(self):
+        """Initialize the user interface components for the welcome page."""
         background_image = Image.open("vct_bg.png")
         background_image = background_image.resize((self.__screen_width, self.__screen_height))
         background_photo = ImageTk.PhotoImage(background_image)
@@ -40,6 +41,7 @@ class AppUI(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
 
     def home_page(self):
+        """Display the home page."""
         self.remove_widgets()
 
         self.display_label = ttk.Label(self, text="Choose the players' statistics",
@@ -63,6 +65,7 @@ class AppUI(tk.Tk):
         self.file_menu.add_command(label="Exit", command=self.quit)
 
     def statistic_page(self, event):
+        """Display the statistic page. There are two options, Overall and By Agent."""
         self.key_pressed = event.widget.cget('text')
         self.remove_widgets()
         self.load_data(self.key_pressed)
@@ -119,6 +122,7 @@ class AppUI(tk.Tk):
         df = pd.DataFrame(self.selected_data)
 
     def graph_page(self):
+        """Display the graph page."""
         selected_column = self.cbb_column.get()
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
@@ -136,6 +140,7 @@ class AppUI(tk.Tk):
             messagebox.showinfo("Warning", "Please select a chart and a column")
 
     def story_page(self):
+        """Story telling page will let the user choose the chart to display."""
         self.remove_widgets()
         self.menu_tab()
         self.selected_data = []
@@ -157,6 +162,7 @@ class AppUI(tk.Tk):
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
     def chart_choose(self):
+        """Choose the player to display the chart for story telling page."""
         if self.cbb_chart.get() == "Pie(Agent)":
             self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
             self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
@@ -167,6 +173,7 @@ class AppUI(tk.Tk):
             messagebox.showinfo("Done", "Picked!, Please click 'Process' button to view the chart.")
 
     def graph_page_story(self):
+        """Display the graph for the story telling chart."""
         selected_chart = self.cbb_chart.get()
         if selected_chart == "Bar(K,D,A)":
             df = pd.read_csv("overall_player_stats.csv")
@@ -195,6 +202,7 @@ class AppUI(tk.Tk):
             messagebox.showinfo("Warning", "Please select a chart.")
 
     def get_player_info(self, player_name):
+        """Get the selected player information from the csv file."""
         if self.key_pressed == "By Agent":
             player_data = pd.read_csv("player_stats_by_agent.csv")
         elif self.key_pressed == "Overall":
@@ -203,6 +211,7 @@ class AppUI(tk.Tk):
         return player_info
 
     def load_data(self, data):
+        """Load the data from the csv file and set the table."""
         if data == "Overall":
             overall_data = pd.read_csv("overall_player_stats.csv")
             self.display_table(overall_data)
@@ -211,13 +220,16 @@ class AppUI(tk.Tk):
             self.display_table(by_agent_data)
 
     def observer(self, event):
+        """Observer pattern to observe the event."""
         self.statistic_page(event)
 
     def remove_widgets(self):
+        """Remove all the widget(s) from a frame."""
         for widget in self.winfo_children():
             widget.destroy()
 
     def display_table(self, data):
+        """Display the table for the data, for the selected statistics and the selected player."""
         self.frame = tk.Frame(self, width=self.__screen_width, height=self.__screen_height // 4)
         self.frame.grid(row=0, column=0, padx=30, pady=20)
         self.frame2 = tk.Frame(self, width=self.__screen_width, height=self.__screen_height // 4, bg="black")
@@ -264,23 +276,27 @@ class AppUI(tk.Tk):
         x_scrollbar2.config(command=self.tree2.xview)
 
     def get_player_name(self):
+        """Get the player name from the csv file."""
         player_data = pd.read_csv("overall_player_stats.csv")
         for index, row in player_data.iterrows():
             self.all_players.append(row['Player'])
         return self.all_players
 
-    def select_all(self, event):
+    def select_all(self, ):
+        """Select all the data from the table."""
         for item in self.tree.get_children():
             str_data = self.tree.item(item)
             self.selected_data.append(str_data['values'])
             self.tree2.insert("", "end", values=str_data['values'])
 
-    def clear_all(self, event):
+    def clear_all(self):
+        """Remove all the selected data from the table."""
         self.selected_data = []
         for item in self.tree2.get_children():
             self.tree2.delete(item)
 
-    def select_item(self, data):
+    def select_item(self):
+        """Select the item from the table and add it to the selected data table."""
         str_data = self.tree.item(self.tree.selection())
 
         if self.key_pressed == "Overall":
@@ -299,5 +315,5 @@ class AppUI(tk.Tk):
             messagebox.showinfo("Warning", "Item already selected")
 
     def run(self):
-        """Display the calculator user interface."""
+        """Display the user interface."""
         self.tk.mainloop()
