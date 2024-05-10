@@ -116,7 +116,6 @@ class Graph:
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def bar_rating_hsp_processor(self, df):
-        # Compare the performance of a selected player across different agent types
         window = tk.Toplevel(self.df)
         window.title("Bar Chart of Rating and Headshot Percentage")
         fig = plt.figure()
@@ -137,6 +136,20 @@ class Graph:
         plt.xlabel("Agent", fontsize=6)
         plt.ylabel("Frequency", fontsize=6)
         plt.legend(loc='upper right')
+
+        canvas = FigureCanvasTkAgg(fig, master=window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def scatter_processor(self, df, first_col, sec_col):
+        window = tk.Toplevel(self.df)
+        window.title("Scatter Plot")
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        fig.set_size_inches(5, 4)
+
+        sns.scatterplot(data=df, x=first_col, y=sec_col, ax=ax)
+        ax.set_title(f"{first_col} vs {sec_col}")
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
