@@ -49,8 +49,12 @@ class Graph:
         ax = fig.add_subplot()
         fig.set_size_inches(5, 4)
 
-        sns.histplot(data=df, x=title, ax=ax)
-        ax.set_title(title)
+        if title == 'Kills Max' or title == 'Rating':
+            sns.histplot(data=df, x=title, ax=ax, kde=True)
+            ax.set_title(title)
+        else:
+            sns.histplot(data=df, x=title, ax=ax)
+            ax.set_title(title)
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
@@ -110,3 +114,6 @@ class Graph:
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def bar_agent_processor(self, df):
+        pass
