@@ -96,3 +96,17 @@ class Graph:
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def pie_agent_processor(self, df):
+        window = tk.Toplevel(self.df)
+        window.title("Pie Chart of Agents")
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        fig.set_size_inches(5, 4)
+
+        ax.pie(df['Rounds Played'], labels=df['Agent'], autopct='%1.2f%%')
+        ax.set_title("Pie graph of rounds played by each agent")
+
+        canvas = FigureCanvasTkAgg(fig, master=window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
