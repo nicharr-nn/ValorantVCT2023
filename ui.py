@@ -29,9 +29,9 @@ class AppUI(tk.Tk):
         self.home_btn.place(relx=0.5, rely=0.5, anchor="center")
         self.exit_btn.place(relx=0.5, rely=0.6, anchor="center")
 
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
+        # self.grid_rowconfigure(0, weight=1)
+        # self.grid_rowconfigure(1, weight=1)
+        # self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
     def home_page(self):
@@ -59,6 +59,7 @@ class AppUI(tk.Tk):
         self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
         self.story_telling_btn.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
 
+
         if self.key_pressed == "Overall":
             # self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "(in progress) Distribution(Kills Max)",
             #                                             "(in progress) Scatter plots(Rating,HSP), Scatter plots(KD,HSP)"])
@@ -67,18 +68,32 @@ class AppUI(tk.Tk):
             self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
                                                          "ACS","KD","ADR","KPR","APR","FKPR","FDPR","Kills Max",
                                                          "K","D","A","FK","FD"])
-            self.cbb_chart = ttk.Combobox(self, values=["Bar", "Pie", "Line", "Histogram", "Boxplot"])
 
         elif self.key_pressed == "By Agent":
-            self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
+            # self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
+            self.cbb_column = ttk.Combobox(self, values=["Rounds Played", "Rating", "ACS", "KD", "KAST", "ADR",
+                                                         "KPR", "APR", "FKPR", "FDPR", "HSP",
+                                                         "CSP", "Kills Max", "K", "D", "A", "FK", "FD"])
 
+        self.cbb_chart = ttk.Combobox(self, values=["Bar", "Pie", "Histogram", "Boxplot"])
         self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
         self.cbb_column.place(relx=0.5, rely=0.9, anchor="se")
+
+        self.tree.bind("<ButtonRelease-1>", self.select_item)
+        self.all_btn = ttk.Button(self, text="All")
+        self.all_btn.bind('<Button>', self.select_all)
+        self.all_btn.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+
+        self.clear_btn = ttk.Button(self, text="Clear")
+        self.clear_btn.bind('<Button>', self.clear_all)
+        self.clear_btn.grid(row=1, column=0, sticky="ne", padx=30, pady=10)
+
         self.descriptive = ttk.Button(self, text="Descriptive", command=self.descriptive_page)
         self.descriptive.place(relx=0.3, rely=0.9, anchor="se")
 
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
+
 
     def descriptive_page(self):
         self.remove_widgets()
@@ -178,7 +193,7 @@ class AppUI(tk.Tk):
         self.frame = tk.Frame(self, width=self.__screen_width, height=self.__screen_height // 4)
         self.frame.grid(row=0, column=0, padx=30, pady=20)
         self.frame2 = tk.Frame(self, width=self.__screen_width, height=self.__screen_height // 4, bg="black")
-        self.frame2.grid(row=1, column=0, padx=30, pady=20)
+        self.frame2.grid(row=2, column=0, padx=30, pady=20)
 
         y_scrollbar = tk.Scrollbar(self.frame, orient="vertical")
         y_scrollbar.pack(side="right", fill="y")
@@ -220,7 +235,16 @@ class AppUI(tk.Tk):
         y_scrollbar2.config(command=self.tree2.yview)
         x_scrollbar2.config(command=self.tree2.xview)
 
-        self.tree.bind("<ButtonRelease-1>", self.select_item)
+    def select_all(self, event):
+        for item in self.tree.get_children():
+            str_data = self.tree.item(item)
+            self.selected_data.append(str_data['values'])
+            self.tree2.insert("", "end", values=str_data['values'])
+
+    def clear_all(self, event):
+        self.selected_data = []
+        for item in self.tree2.get_children():
+            self.tree2.delete(item)
 
     def select_item(self, data):
         str_data = self.tree.item(self.tree.selection())
