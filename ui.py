@@ -2,11 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 from PIL import Image, ImageTk
-
 from graph import Graph
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class AppUI(tk.Tk):
     def __init__(self):
@@ -19,8 +15,8 @@ class AppUI(tk.Tk):
         self.main_frame = ttk.Frame(self)
         self.selected_data = []
         self.init_components()
-        # call graph.py
         self.graph = Graph()
+        self.all_players = []
 
     def init_components(self):
         background_image = Image.open("vct_bg.png")
@@ -167,28 +163,24 @@ class AppUI(tk.Tk):
         self.remove_widgets()
         self.menu_tab()
         self.selected_data = []
-        self.load_data(self.key_pressed)
 
         self.back_btn = ttk.Button(self, text="Back", command=self.statistic_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
-
-        self.all_btn = ttk.Button(self, text="All")
-        self.all_btn.bind('<Button>', self.select_all)
-        self.all_btn.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
-
-        self.clear_btn = ttk.Button(self, text="Clear")
-        self.clear_btn.bind('<Button>', self.clear_all)
-        self.clear_btn.grid(row=1, column=0, sticky="ne", padx=30, pady=10)
 
         if self.key_pressed == "Overall":
             self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Distribution(Kills Max)",
                                                         "Scatter plots(Rating,HSP)", "Scatter plots(KD,HSP)"])
         elif self.key_pressed == "By Agent":
-            self.cbb_chart = ttk.Combobox(self, values=["(in progress) Pie(Agent)", "(in progress)"])
+            self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"])
 
-        self.cbb_chart.place(relx=0.7, rely=0.9, anchor="se")
+        # self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
+        # self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
 
-        self.tree.bind("<ButtonRelease-1>", self.select_item)
+        self.player_selected = ttk.Combobox(self, values=self.get_player_name())
+        self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+
+        # self.tree.bind("<ButtonRelease-1>", self.select_item)
+        self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
@@ -268,6 +260,12 @@ class AppUI(tk.Tk):
         self.tree2.configure(yscrollcommand=y_scrollbar2.set, xscrollcommand=x_scrollbar2.set)
         y_scrollbar2.config(command=self.tree2.yview)
         x_scrollbar2.config(command=self.tree2.xview)
+
+    def get_player_name(self):
+        player_data = pd.read_csv("overall_player_stats.csv")
+        for index, row in player_data.iterrows():
+            self.all_players.append(row['Player'])
+        return self.all_players
 
     def select_all(self, event):
         for item in self.tree.get_children():
