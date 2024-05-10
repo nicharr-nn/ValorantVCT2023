@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -64,6 +65,32 @@ class Graph:
 
         sns.boxplot(data=df, x=title, ax=ax)
         ax.set_title(title)
+
+        canvas = FigureCanvasTkAgg(fig, master=window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def bar_KDA_processor(self, df, data):
+        window = tk.Toplevel(self.df)
+        window.title("Bar Chart (Kills, Death, Assist)")
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        fig.set_size_inches(5, 4)
+
+        bar_width = 0.2
+
+        x = np.arange(len(df['Player']))
+
+        ax.bar(x - bar_width, df['K'], width=bar_width, color='blue', alpha=0.7, label='Kills')
+        ax.bar(x, df['D'], width=bar_width, color='red', alpha=0.7, label='Deaths')
+        ax.bar(x + bar_width, df['A'], width=bar_width, color='green', alpha=0.7, label='Assists')
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(df['Player'], rotation=0, fontsize=8)
+
+        plt.xlabel("Player", fontsize=8)
+        plt.ylabel("Kills count", fontsize=8)
+        plt.legend()
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
