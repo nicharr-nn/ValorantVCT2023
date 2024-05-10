@@ -95,7 +95,7 @@ class Graph:
         plt.title("Bar graph of KDA for all players", fontsize=6)
         plt.xlabel("Player", fontsize=6)
         plt.ylabel("Frequency", fontsize=6)
-        plt.legend()
+        plt.legend(loc='upper right')
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
@@ -115,5 +115,29 @@ class Graph:
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def bar_agent_processor(self, df):
-        pass
+    def bar_rating_hsp_processor(self, df):
+        # Compare the performance of a selected player across different agent types
+        window = tk.Toplevel(self.df)
+        window.title("Bar Chart of Rating and Headshot Percentage")
+        fig = plt.figure()
+        ax = fig.add_subplot()
+        fig.set_size_inches(5, 4)
+
+        bar_width = 0.2
+
+        x = np.arange(len(df['Agent']))
+
+        ax.bar(x - bar_width, df['Rating'], width=bar_width, color='blue', alpha=0.7, label='Rating')
+        ax.bar(x, df['HSP'], width=bar_width, color='red', alpha=0.7, label='Headshot %')
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(df['Agent'], rotation=90, fontsize=6)
+
+        plt.title("Bar graph of Rating and Headshot Percentage for all agents", fontsize=6)
+        plt.xlabel("Agent", fontsize=6)
+        plt.ylabel("Frequency", fontsize=6)
+        plt.legend(loc='upper right')
+
+        canvas = FigureCanvasTkAgg(fig, master=window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
