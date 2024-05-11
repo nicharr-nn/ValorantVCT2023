@@ -21,6 +21,8 @@ class Graph:
         sns.barplot(x='Player', y=val_str_float, data=df, ax=ax)
         plt.title(title, fontsize=6)
         plt.ylabel(title, fontsize=6)
+        plt.xlabel("Player", fontsize=6)
+        plt.xticks(rotation=90, fontsize=4)
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
