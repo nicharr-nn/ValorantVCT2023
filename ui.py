@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import pandas as pd
 from PIL import Image, ImageTk
 from graph import Graph
+# from descriptive import Descriptive_stats
 
 class AppUI(tk.Tk):
     def __init__(self):
@@ -16,6 +17,7 @@ class AppUI(tk.Tk):
         self.selected_data = []
         self.init_components()
         self.graph = Graph()
+        # self.descriptive = Descriptive_stats()
         self.all_players = []
         self.player_selected = None
 
@@ -29,8 +31,13 @@ class AppUI(tk.Tk):
         background_label.image = background_photo
         background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        self.display_label = ttk.Label(self, text="VALORANT Champions Tour 2023 Player Performance",
+        label_frame = tk.Frame(self, width=500, height=40)
+        label_frame.place(relx=0.5, rely=0.4, anchor="center")
+
+        self.display_label = ttk.Label(label_frame, text="VALORANT Champions Tour 2023 Player Performance",
                                        font=("Arial", 16, "bold"))
+
+        self.display_label.pack(fill="both", expand=True)
         self.home_btn = ttk.Button(self, text="Home", command=self.home_page)
         self.exit_btn = ttk.Button(self, text="Exit", command=self.quit)
 
@@ -111,15 +118,11 @@ class AppUI(tk.Tk):
         self.remove_widgets()
         self.menu_tab()
         # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
-        self.column_selected = ttk.Combobox(self, values=["(in progress) Rating, HSP", "(in progress) KD, HSP"])
-        self.column_selected.pack()
-        self.process_btn = ttk.Button(self, text="Process", command=self.descrip_calculate)
-        self.process_btn.pack()
-        self.player_selected = ttk.Combobox(self, values=["Demon1", "in progress"])
-
-    def descrip_calculate(self):
-        # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
-        df = pd.DataFrame(self.selected_data)
+        self.display_label = ttk.Label(self, text="Descriptive Statistics",
+                                       font=("Arial", 16, "bold"))
+        self.display_mean = ttk.Label(self, text="Mean:")
+        self.display_label.place(relx=0.5, rely=0.4, anchor="center")
+        self.display_mean.place(relx=0.5, rely=0.5, anchor="center")
 
     def graph_page(self):
         """Display the graph page."""
@@ -152,12 +155,14 @@ class AppUI(tk.Tk):
         elif self.key_pressed == "By Agent":
             self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"], state="readonly")
             self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
-            self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
-
+            self.pick_chart_btn.place(relx=0.7, rely=0.9, anchor="se")
+            # self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
 
-        self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+        # self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+        self.cbb_chart.place(relx=0.5, rely=0.4, anchor="center")
+
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
@@ -165,10 +170,12 @@ class AppUI(tk.Tk):
         """Choose the player to display the chart for story telling page."""
         if self.cbb_chart.get() == "Pie(Agent)":
             self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
-            self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+            self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
+            # self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
         elif self.cbb_chart.get() == "Bar(Rating,HSP)":
             self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
-            self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+            self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
+            # self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
         else:
             messagebox.showinfo("Done", "Picked!, Please click 'Process' button to view the chart.")
 
@@ -282,20 +289,20 @@ class AppUI(tk.Tk):
             self.all_players.append(row['Player'])
         return self.all_players
 
-    def select_all(self, ):
+    def select_all(self, event):
         """Select all the data from the table."""
         for item in self.tree.get_children():
             str_data = self.tree.item(item)
             self.selected_data.append(str_data['values'])
             self.tree2.insert("", "end", values=str_data['values'])
 
-    def clear_all(self):
+    def clear_all(self, event):
         """Remove all the selected data from the table."""
         self.selected_data = []
         for item in self.tree2.get_children():
             self.tree2.delete(item)
 
-    def select_item(self):
+    def select_item(self, event):
         """Select the item from the table and add it to the selected data table."""
         str_data = self.tree.item(self.tree.selection())
 
