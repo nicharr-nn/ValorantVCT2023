@@ -26,7 +26,7 @@ class Graph:
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def pie_processor(self, df, title, data):
+    def pie_processor(self, df, title):
         window = tk.Toplevel(self.df)
         window.title("Pie Chart")
         fig = plt.figure()
@@ -42,7 +42,7 @@ class Graph:
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def histogram_processor(self, df, title, data):
+    def histogram_processor(self, df, title):
         window = tk.Toplevel(self.df)
         window.title("Histogram")
         fig = plt.figure()
@@ -60,7 +60,7 @@ class Graph:
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    def boxplot_processor(self, df, title, data):
+    def boxplot_processor(self, df, title):
         window = tk.Toplevel(self.df)
         window.title("Boxplot")
         fig = plt.figure()
