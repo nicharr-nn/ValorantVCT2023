@@ -2,10 +2,18 @@
 VALORANT is a free-to-play first-person 5v5 character-based tactical FPS tactical hero shooter developed and published by Riot Games. This project is a comprehensive tool for analyzing VALORANT player performance in the VALORANT Champions Tour 2023 (VCT2023). It allows users to analyze player statistics and match performance to gain a deeper understanding of the player's strengths, weaknesses, and contributions to their team's success.
 
 ## Link to Wiki
-https://github.com/nicharr-nn/ValorantVCT2023/wiki
+[Wiki](https://github.com/nicharr-nn/ValorantVCT2023/wiki)
+
+[Project Proposal](https://github.com/nicharr-nn/ValorantVCT2023/wiki/Project-Proposal)
+
+[Weekly plan](https://github.com/nicharr-nn/ValorantVCT2023/wiki/Weekly-Plan)
+
+[Design Documents and UML Diagrams](https://github.com/nicharr-nn/ValorantVCT2023/wiki/Design-Documents-and-UML-Diagrams)
+
+[How to Install](https://github.com/nicharr-nn/ValorantVCT2023/wiki/How-to-Install)
 
 ## Data Sources
-https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance
+[Data Sources](https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance)
 
 (I edited the data in column CL (clutch won/lost), which the owner of this dataset wrote by using "/". This caused Excel to interpret it as a date. So, I edited it to be normal text and changed "/" to ":")
 
@@ -67,3 +75,8 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
+
+## Video
+[GoogleDrive](https://drive.google.com/file/d/1FFrgxkG1mMY9f6FuOwcezZ-iifwMl3EK/view?usp=sharing)
+
+[YouTube](https://youtu.be/YG9ZYVJRHi8)
