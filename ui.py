@@ -229,27 +229,22 @@ class AppUI(tk.Tk):
     def graph_page_story(self):
         """Display the graph for the story telling chart."""
         selected_chart = self.cbb_chart.get()
-        if selected_chart == "Bar(K,D,A)":
+        if self.key_pressed == "Overall":
             df = pd.read_csv("overall_player_stats.csv")
-            self.graph.bar_KDA_processor(df)
-        elif selected_chart == "Distribution(Kills Max)":
-            df = pd.read_csv("overall_player_stats.csv")
-            self.graph.histogram_processor(df, "Kills Max")
-        elif selected_chart == "Distribution(Rating)":
-            df = pd.read_csv("overall_player_stats.csv")
-            self.graph.histogram_processor(df, "Rating")
+            if selected_chart == "Bar(K,D,A)":
+                self.graph.bar_KDA_processor(df)
+            elif selected_chart == "Distribution(Kills Max)":
+                self.graph.histogram_processor(df, "Kills Max")
+            elif selected_chart == "Distribution(Rating)":
+                self.graph.histogram_processor(df, "Rating")
+            elif selected_chart == "Scatter plots(Rating,HSP)":
+                self.graph.scatter_processor(df, "Rating", "HSP")
+            elif selected_chart == "Scatter plots(KD,HSP)":
+                self.graph.scatter_processor(df, "KD", "HSP")
         elif selected_chart == "Bar(Rating,HSP)":
             df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
             self.graph.bar_rating_hsp_processor(df)
-        elif selected_chart == "Scatter plots(Rating,HSP)":
-            df = pd.read_csv("overall_player_stats.csv")
-            self.graph.scatter_processor(df, "Rating", "HSP")
-        elif selected_chart == "Scatter plots(KD,HSP)":
-            df = pd.read_csv("overall_player_stats.csv")
-            self.graph.scatter_processor(df, "KD", "HSP")
         elif selected_chart == "Pie(Agent)":
-            if not self.player_selected:
-                messagebox.showinfo("Warning", "Please click 'Pick' button to select a player.")
             df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
             self.graph.pie_agent_processor(df)
         else:
@@ -308,8 +303,6 @@ class AppUI(tk.Tk):
         self.tree.configure(yscrollcommand=y_scrollbar.set, xscrollcommand=x_scrollbar.set)
         y_scrollbar.config(command=self.tree.yview)
         x_scrollbar.config(command=self.tree.xview)
-
-        # second table
 
         y_scrollbar2 = tk.Scrollbar(self.frame2, orient="vertical")
         y_scrollbar2.pack(side="right", fill="y")
