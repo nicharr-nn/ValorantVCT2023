@@ -215,13 +215,13 @@ class AppUI(tk.Tk):
             messagebox.showinfo("Warning", "Please select a column.")
             return
         elif selected_chart == "Bar":
-            self.graph.bar_processor(df, selected_column, self.selected_data)
+            self.graph.bar_processor(df, selected_column)
         elif selected_chart == "Pie":
-            self.graph.pie_processor(df, selected_column, self.selected_data)
+            self.graph.pie_processor(df, selected_column)
         elif selected_chart == "Histogram":
-            self.graph.histogram_processor(df, selected_column, self.selected_data)
+            self.graph.histogram_processor(df, selected_column)
         elif selected_chart == "Boxplot":
-            self.graph.boxplot_processor(df, selected_column, self.selected_data)
+            self.graph.boxplot_processor(df, selected_column)
         else:
             messagebox.showinfo("Warning", "Please select a chart.")
             return
@@ -234,10 +234,10 @@ class AppUI(tk.Tk):
             self.graph.bar_KDA_processor(df)
         elif selected_chart == "Distribution(Kills Max)":
             df = pd.read_csv("overall_player_stats.csv")
-            self.graph.histogram_processor(df, "Kills Max", self.selected_data)
+            self.graph.histogram_processor(df, "Kills Max")
         elif selected_chart == "Distribution(Rating)":
             df = pd.read_csv("overall_player_stats.csv")
-            self.graph.histogram_processor(df, "Rating", self.selected_data)
+            self.graph.histogram_processor(df, "Rating")
         elif selected_chart == "Bar(Rating,HSP)":
             df = pd.DataFrame(self.get_player_info(self.player_selected.get()))
             self.graph.bar_rating_hsp_processor(df)
