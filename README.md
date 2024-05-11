@@ -13,8 +13,30 @@ Requires Python >= 3.10
 - Player Statistics: Details of player statistics, such as in-game name, unique agents used, agent types, rating, average combat score, kill/death ratio, kills per round, average damage dealt per round, etc.
 - Comparison Tools: Allows users to compare players’ performance (bar chart, pie chart, scatter plot, histogram, and box plot).
 
+## Application UI
+### First Page
+- This page is like a welcome page. It contains the title of the application, home button (to the second page), and exit button.
+![First Page](screenshots/page1.png)
+### Second Page
+- This page will show 2 buttons that you need to select which one you want to see the statistics.
+- "Overall" button and "By Agent" button will lead to the third page.
+![Second Page](screenshots/page2.png)
+### Third Page
+- This page will show the statistics of the player.
+- This page will let you choose the player and column you want to see the graph.
+![Third Page](screenshots/page3.png)
+### Fourth Page
+- This page will show descriptive statistics of the column you choose and the graph.
+![Fourth Page](screenshots/page4.png)
+### Fifth Page
+- This page will show the graph that user choose.
+![Fifth Page](screenshots/page5.png)
+
 ## How to run the application
 1. Clone the repository
+```bash
+git clone https://github.com/nicharr-nn/ValorantVCT2023.git
+```
 2. Create a virtual environment by running the following command in the terminal:
 ```bash
 python -m venv venv
