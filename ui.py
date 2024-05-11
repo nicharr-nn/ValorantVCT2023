@@ -76,6 +76,7 @@ class AppUI(tk.Tk):
         self.remove_widgets()
         self.load_data(self.key_pressed)
         self.menu_tab()
+        self.selected_data = []
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
@@ -208,7 +209,11 @@ class AppUI(tk.Tk):
         selected_chart = self.cbb_chart.get()
         df = pd.DataFrame(self.selected_data)
         if not self.selected_data:
-            messagebox.showinfo("Warning", "Please select a player")
+            messagebox.showinfo("Warning", "Please select at least 1 player.")
+            return
+        elif not selected_column:
+            messagebox.showinfo("Warning", "Please select a column.")
+            return
         elif selected_chart == "Bar":
             self.graph.bar_processor(df, selected_column, self.selected_data)
         elif selected_chart == "Pie":
@@ -218,7 +223,8 @@ class AppUI(tk.Tk):
         elif selected_chart == "Boxplot":
             self.graph.boxplot_processor(df, selected_column, self.selected_data)
         else:
-            messagebox.showinfo("Warning", "Please select a chart and a column")
+            messagebox.showinfo("Warning", "Please select a chart.")
+            return
 
     def graph_page_story(self):
         """Display the graph for the story telling chart."""
@@ -332,10 +338,22 @@ class AppUI(tk.Tk):
 
     def select_all(self, event):
         """Select all the data from the table."""
+        if self.key_pressed == "Overall":
+            column = ["Player ID", "Player", "Team", "Number of Agents Played", "Rounds Played", "Rating",
+                      "ACS", "KD", "KAST", "ADR", "KPR", "APR", "FKPR", "FDPR", "HSP", "CSP", "CL", "Kills Max",
+                      "K", "D", "A", "FK", "FD"]
+        elif self.key_pressed == "By Agent":
+            column = ["Player ID", "Player", "Team", "Agent", "Agent Type", "Rounds Played", "Rating", "ACS", "KD",
+                      "KAST", "ADR", "KPR",
+                      "APR", "FKPR", "FDPR", "HSP", "CSP", "Kills Max", "K", "D",
+                      "A", "FK", "FD"]
+
         for item in self.tree.get_children():
             str_data = self.tree.item(item)
-            self.selected_data.append(str_data['values'])
-            self.tree2.insert("", "end", values=str_data['values'])
+            dict_data = dict(zip(column, str_data['values']))
+            if dict_data not in self.selected_data:
+                self.selected_data.append(dict_data)
+                self.tree2.insert("", "end", values=str_data['values'])
 
     def clear_all(self, event):
         """Remove all the selected data from the table."""
