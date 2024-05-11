@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import pandas as pd
 from PIL import Image, ImageTk
 from graph import Graph
-# from descriptive import Descriptive_stats
+from descriptive import DescriptiveStats
 
 class AppUI(tk.Tk):
     def __init__(self):
@@ -17,7 +17,7 @@ class AppUI(tk.Tk):
         self.selected_data = []
         self.init_components()
         self.graph = Graph()
-        # self.descriptive = Descriptive_stats()
+        self.descriptive = DescriptiveStats()
         self.all_players = []
         self.player_selected = None
 
@@ -31,10 +31,7 @@ class AppUI(tk.Tk):
         background_label.image = background_photo
         background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        label_frame = tk.Frame(self, width=500, height=40)
-        label_frame.place(relx=0.5, rely=0.4, anchor="center")
-
-        self.display_label = ttk.Label(label_frame, text="VALORANT Champions Tour 2023 Player Performance",
+        self.display_label = ttk.Label(self, text="VALORANT Champions Tour 2023 Player Performance",
                                        font=("Arial", 16, "bold"))
 
         self.display_label.pack(fill="both", expand=True)
@@ -117,12 +114,71 @@ class AppUI(tk.Tk):
     def descriptive_page(self):
         self.remove_widgets()
         self.menu_tab()
-        # calculate the descriptive statistics (mean, median, mode, std, min, max) for the selected column
+        if self.key_pressed == "Overall":
+            self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played", "Rounds Played", "Rating",
+                                                         "ACS", "KD", "ADR", "KPR", "APR", "FKPR", "FDPR", "Kills Max",
+                                                         "K", "D", "A", "FK", "FD"], state="readonly")
+        elif self.key_pressed == "By Agent":
+            self.cbb_column = ttk.Combobox(self, values=["Rounds Played", "Rating", "ACS", "KD", "KAST", "ADR",
+                                                         "KPR", "APR", "FKPR", "FDPR", "HSP", "CSP", "Kills Max",
+                                                         "K", "D", "A", "FK", "FD"], state="readonly")
+
+        self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
+        self.process_btn = ttk.Button(self, text="Process", command=self.display_descriptive)
+
         self.display_label = ttk.Label(self, text="Descriptive Statistics",
                                        font=("Arial", 16, "bold"))
         self.display_mean = ttk.Label(self, text="Mean:")
-        self.display_label.place(relx=0.5, rely=0.4, anchor="center")
-        self.display_mean.place(relx=0.5, rely=0.5, anchor="center")
+        self.display_median = ttk.Label(self, text="Median:")
+        self.display_mode = ttk.Label(self, text="Mode:")
+        self.display_range = ttk.Label(self, text="Range:")
+        self.display_std = ttk.Label(self, text="Standard Deviation:")
+        self.display_var = ttk.Label(self, text="Variance:")
+        self.display_q1 = ttk.Label(self, text="Q1:")
+        self.display_q3 = ttk.Label(self, text="Q3:")
+        self.display_iqr = ttk.Label(self, text="IQR:")
+
+        self.display_label.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
+        self.cbb_column.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
+        self.display_mean.grid(row=2, column=0, sticky="nw", padx=30, pady=10)
+        self.display_median.grid(row=3, column=0, sticky="nw", padx=30, pady=10)
+        self.display_mode.grid(row=4, column=0, sticky="nw", padx=30, pady=10)
+        self.display_range.grid(row=5, column=0, sticky="nw", padx=30, pady=10)
+        self.display_std.grid(row=6, column=0, sticky="nw", padx=30, pady=10)
+        self.display_var.grid(row=7, column=0, sticky="nw", padx=30, pady=10)
+        self.display_q1.grid(row=8, column=0, sticky="nw", padx=30, pady=10)
+        self.display_q3.grid(row=9, column=0, sticky="nw", padx=30, pady=10)
+        self.display_iqr.grid(row=10, column=0, sticky="nw", padx=30, pady=10)
+
+        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
+        self.process_btn.place(relx=0.8, rely=0.9, anchor="se")
+
+    def display_descriptive(self):
+        # Call methods from DescriptiveStats class to calculate mean, median, and mode
+        if self.key_pressed == "Overall":
+            df = DescriptiveStats(pd.read_csv("overall_player_stats.csv"))
+        elif self.key_pressed == "By Agent":
+            df = DescriptiveStats(pd.read_csv("player_stats_by_agent.csv"))
+        column = self.cbb_column.get()
+        mean_val = df.mean_val(column)
+        median_val = df.median_val(column)
+        mode_val = df.mode_val(column)
+        range_val = df.range_val(column)
+        std_val = df.std_dev(column)
+        var_val = df.var_val(column)
+        q1_val = df.q1_val(column)
+        q3_val = df.q3_val(column)
+        iqr_val = df.iqr_val(column)
+
+        self.display_mean.config(text=f"Mean: {mean_val:.2f}")
+        self.display_median.config(text=f"Median: {median_val:.2f}")
+        self.display_mode.config(text=f"Mode: {mode_val}")
+        self.display_range.config(text=f"Range: {range_val:.2f}")
+        self.display_std.config(text=f"Standard Deviation: {std_val:.2f}")
+        self.display_var.config(text=f"Variance: {var_val:.2f}")
+        self.display_q1.config(text=f"Q1: {q1_val:.2f}")
+        self.display_q3.config(text=f"Q3: {q3_val:.2f}")
+        self.display_iqr.config(text=f"IQR: {iqr_val:.2f}")
 
     def graph_page(self):
         """Display the graph page."""
@@ -156,14 +212,12 @@ class AppUI(tk.Tk):
             self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"], state="readonly")
             self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
             self.pick_chart_btn.place(relx=0.7, rely=0.9, anchor="se")
-            # self.pick_chart_btn.grid(row=0, column=1, padx=30, pady=10)
+
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
-        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
-
-        # self.cbb_chart.grid(row=0, column=0, sticky="nw", padx=30, pady=10)
-        self.cbb_chart.place(relx=0.5, rely=0.4, anchor="center")
-
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
+
+        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
+        self.cbb_chart.place(relx=0.5, rely=0.4, anchor="center")
         self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
 
     def chart_choose(self):
@@ -171,13 +225,11 @@ class AppUI(tk.Tk):
         if self.cbb_chart.get() == "Pie(Agent)":
             self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
             self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
-            # self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
         elif self.cbb_chart.get() == "Bar(Rating,HSP)":
             self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
             self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
-            # self.player_selected.grid(row=1, column=0, sticky="nw", padx=30, pady=10)
         else:
-            messagebox.showinfo("Done", "Picked!, Please click 'Process' button to view the chart.")
+            messagebox.showinfo("Done", "Done!, Please click 'Process' button to view the chart.")
 
     def graph_page_story(self):
         """Display the graph for the story telling chart."""
