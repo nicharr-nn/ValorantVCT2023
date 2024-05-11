@@ -19,10 +19,11 @@ class Graph:
 
         sns.barplot(x='Player', y=title, data=df, ax=ax)
         ax.set_xticks(range(len(df['Player'])))
-        ax.set_xticklabels(df['Player'], rotation=45, ha='right', fontsize=6)
+        ax.set_xticklabels(df['Player'], rotation=90, ha='right', fontsize=6)
         ax.set_yticks(ax.get_yticks())
         ax.set_yticklabels(ax.get_yticklabels(), fontsize=6)
         ax.set_title(title, fontsize=6)
+
 
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
@@ -36,6 +37,8 @@ class Graph:
         fig.set_size_inches(5, 4)
 
         ax.pie(df[title], labels=df['Player'], autopct='%1.2f%%')
+        for text in ax.texts:
+            text.set_fontsize(6)
         ax.set_title(title)
 
         canvas = FigureCanvasTkAgg(fig, master=window)
