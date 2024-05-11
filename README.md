@@ -1,6 +1,9 @@
 # VALORANT Champions Tour 2023 Player Performance
 VALORANT is a free-to-play first-person 5v5 character-based tactical FPS tactical hero shooter developed and published by Riot Games. This project is a comprehensive tool for analyzing VALORANT player performance in the VALORANT Champions Tour 2023 (VCT2023). It allows users to analyze player statistics and match performance to gain a deeper understanding of the player's strengths, weaknesses, and contributions to their team's success.
 
+## Link to Wiki
+https://github.com/nicharr-nn/ValorantVCT2023/wiki
+
 ## Data Sources
 https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance
 
@@ -37,11 +40,15 @@ Requires Python >= 3.10
 ```bash
 git clone https://github.com/nicharr-nn/ValorantVCT2023.git
 ```
-2. Create a virtual environment by running the following command in the terminal:
+2. cd into the project directory
+```bash
+cd ValorantVCT2023
+```
+3. Create a virtual environment by running the following command in the terminal:
 ```bash
 python -m venv venv
 ```
-3. Activate the virtual environment by running the following command in the terminal:
+4. Activate the virtual environment by running the following command in the terminal:
 
 MacOS or Linux:
 ```bash
@@ -52,11 +59,11 @@ Windows:
 ```bash
 venv\Scripts\activate
 ```
-4. Install the required packages by running the following command in the terminal:
+5. Install the required packages by running the following command in the terminal:
 ```bash
 pip install -r requirements.txt
 ```
-5. Run the application by executing the following command:
+6. Run the application by executing the following command:
 ```bash
 python main.py
 ```
