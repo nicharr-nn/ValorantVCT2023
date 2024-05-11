@@ -15,11 +15,11 @@ class AppUI(tk.Tk):
         self.geometry(f"{self.__screen_width}x{self.__screen_height}")
         self.main_frame = ttk.Frame(self)
         self.selected_data = []
-        self.init_components()
         self.graph = Graph()
         self.descriptive = DescriptiveStats()
         self.all_players = []
         self.player_selected = None
+        self.init_components()
 
     def init_components(self):
         """Initialize the user interface components for the welcome page."""
@@ -45,8 +45,9 @@ class AppUI(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
 
     def home_page(self):
-        """Display the home page."""
+        """Display the home page. This page will let the user choose the statistics."""
         self.remove_widgets()
+        self.menu_tab()
 
         self.display_label = ttk.Label(self, text="Choose the players' statistics",
                                        font=("Arial", 16, "bold"))
@@ -60,6 +61,7 @@ class AppUI(tk.Tk):
         self.byagent_btn.place(relx=0.6, rely=0.5, anchor="center")
 
     def menu_tab(self):
+        """Display the menu tab."""
         self.menu_bar = tk.Menu(self)
         self.config(menu=self.menu_bar)
         self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
@@ -77,9 +79,6 @@ class AppUI(tk.Tk):
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
-
-        self.story_telling_btn = ttk.Button(self, text="Story Telling", command=self.story_page)
-        self.story_telling_btn.place(relx=0.1, rely=0.9, anchor="sw")
 
         if self.key_pressed == "Overall":
             self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played","Rounds Played","Rating",
@@ -105,7 +104,7 @@ class AppUI(tk.Tk):
         self.clear_btn.bind('<Button>', self.clear_all)
         self.clear_btn.grid(row=1, column=0, sticky="ne", padx=30, pady=10)
 
-        self.descriptive = ttk.Button(self, text="Descriptive", command=self.descriptive_page)
+        self.descriptive = ttk.Button(self, text="Descriptive and Graph", command=self.descriptive_page)
         self.descriptive.place(relx=0.3, rely=0.9, anchor="se")
 
         self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page)
@@ -118,10 +117,13 @@ class AppUI(tk.Tk):
             self.cbb_column = ttk.Combobox(self, values=["Number of Agents Played", "Rounds Played", "Rating",
                                                          "ACS", "KD", "ADR", "KPR", "APR", "FKPR", "FDPR", "Kills Max",
                                                          "K", "D", "A", "FK", "FD"], state="readonly")
+            self.graph_story_label = ttk.Label(self, text="Graph (all players)", font=("Arial", 16, "bold"))
+
         elif self.key_pressed == "By Agent":
             self.cbb_column = ttk.Combobox(self, values=["Rounds Played", "Rating", "ACS", "KD", "KAST", "ADR",
                                                          "KPR", "APR", "FKPR", "FDPR", "HSP", "CSP", "Kills Max",
                                                          "K", "D", "A", "FK", "FD"], state="readonly")
+            self.graph_story_label = ttk.Label(self, text="Graph (specific player)", font=("Arial", 16, "bold"))
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
         self.process_btn = ttk.Button(self, text="Process", command=self.display_descriptive)
@@ -152,9 +154,29 @@ class AppUI(tk.Tk):
 
         self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
         self.process_btn.place(relx=0.8, rely=0.9, anchor="se")
+        self.graph_story_label.grid(row=11, column=0, sticky="nw", padx=30, pady=10)
+
+        self.selected_data = []
+
+        if self.key_pressed == "Overall":
+            self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Distribution(Kills Max)",
+                                                        "Distribution(Rating)", "Scatter plots(Rating,HSP)",
+                                                        "Scatter plots(KD,HSP)"], state="readonly")
+        elif self.key_pressed == "By Agent":
+            self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"], state="readonly")
+            self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
+            self.player_selected.grid(row=13, column=0, sticky="nw", padx=30, pady=10)
+
+
+        self.cbb_chart.grid(row=12, column=0, sticky="nw", padx=30, pady=10)
+        self.graph_btn = ttk.Button(self, text="Graph", command=self.graph_page_story)
+        self.graph_btn.place(relx=0.7, rely=0.9, anchor="se")
 
     def display_descriptive(self):
-        # Call methods from DescriptiveStats class to calculate mean, median, and mode
+        """Display the descriptive statistics for the selected column."""
+        if not self.cbb_column.get():
+            messagebox.showinfo("Warning", "Please select a column")
+            return
         if self.key_pressed == "Overall":
             df = DescriptiveStats(pd.read_csv("overall_player_stats.csv"))
         elif self.key_pressed == "By Agent":
@@ -197,39 +219,6 @@ class AppUI(tk.Tk):
             self.graph.boxplot_processor(df, selected_column, self.selected_data)
         else:
             messagebox.showinfo("Warning", "Please select a chart and a column")
-
-    def story_page(self):
-        """Story telling page will let the user choose the chart to display."""
-        self.remove_widgets()
-        self.menu_tab()
-        self.selected_data = []
-
-        if self.key_pressed == "Overall":
-            self.cbb_chart = ttk.Combobox(self, values=["Bar(K,D,A)", "Distribution(Kills Max)",
-                                                        "Distribution(Rating)", "Scatter plots(Rating,HSP)",
-                                                        "Scatter plots(KD,HSP)"], state="readonly")
-        elif self.key_pressed == "By Agent":
-            self.cbb_chart = ttk.Combobox(self, values=["Pie(Agent)", "Bar(Rating,HSP)"], state="readonly")
-            self.pick_chart_btn = ttk.Button(self, text="Pick", command=self.chart_choose)
-            self.pick_chart_btn.place(relx=0.7, rely=0.9, anchor="se")
-
-        self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
-        self.graph_btn = ttk.Button(self, text="Process", command=self.graph_page_story)
-
-        self.back_btn.place(relx=0.9, rely=0.9, anchor="se")
-        self.cbb_chart.place(relx=0.5, rely=0.4, anchor="center")
-        self.graph_btn.place(relx=0.8, rely=0.9, anchor="se")
-
-    def chart_choose(self):
-        """Choose the player to display the chart for story telling page."""
-        if self.cbb_chart.get() == "Pie(Agent)":
-            self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
-            self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
-        elif self.cbb_chart.get() == "Bar(Rating,HSP)":
-            self.player_selected = ttk.Combobox(self, values=self.get_player_name(), state="readonly")
-            self.player_selected.place(relx=0.5, rely=0.5, anchor="center")
-        else:
-            messagebox.showinfo("Done", "Done!, Please click 'Process' button to view the chart.")
 
     def graph_page_story(self):
         """Display the graph for the story telling chart."""
