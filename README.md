@@ -9,17 +9,32 @@ https://www.kaggle.com/datasets/vkay616/valorant-vct-2023-player-performance
 ## Python Version
 Requires Python >= 3.10
 
-## Current Features
-- Display player statistics table
-- Display graphs (bar, pie, histogram, and boxplot) based on user input
+## Main Features
+- Player Statistics: Details of player statistics, such as in-game name, unique agents used, agent types, rating, average combat score, kill/death ratio, kills per round, average damage dealt per round, etc.
+- Comparison Tools: Allows users to compare players’ performance (bar chart, pie chart, scatter plot, histogram, and box plot).
 
 ## How to run the application
 1. Clone the repository
-2. Install the required packages by running the following command in the terminal:
+2. Create a virtual environment by running the following command in the terminal:
+```bash
+python -m venv venv
+```
+3. Activate the virtual environment by running the following command in the terminal:
+
+MacOS or Linux:
+```bash
+source venv/bin/activate
+```
+
+Windows:
+```bash
+venv\Scripts\activate
+```
+4. Install the required packages by running the following command in the terminal:
 ```bash
 pip install -r requirements.txt
 ```
-3. Run the application by executing the following command:
+5. Run the application by executing the following command:
 ```bash
 python main.py
 ```
