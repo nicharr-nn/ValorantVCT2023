@@ -126,7 +126,7 @@ class AppUI(tk.Tk):
             self.graph_story_label = ttk.Label(self, text="Graph (specific player)", font=("Arial", 16, "bold"))
 
         self.back_btn = ttk.Button(self, text="Back", command=self.home_page)
-        self.process_btn = ttk.Button(self, text="Process", command=self.display_descriptive)
+        self.process_btn = ttk.Button(self, text="Descriptive", command=self.display_descriptive)
 
         self.display_label = ttk.Label(self, text="Descriptive Statistics",
                                        font=("Arial", 16, "bold"))
